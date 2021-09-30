@@ -385,11 +385,27 @@ class ARKitController {
   }
 
   /// Updates the geometry with the vertices of a face geometry.
-  void updateFaceGeometry(ARKitNode node, String fromAnchorId) {
-    _channel.invokeMethod<void>(
+  /// Returns an array with:
+  /// - at position 0 all vertices of the geometry
+  /// - at position 1 all triangles' indices of the geometry
+  Future<List<dynamic>> updateFaceGeometry(
+      ARKitNode node, String fromAnchorId) async {
+    final result = await (_channel.invokeListMethod(
         'updateFaceGeometry',
-        _getHandlerParams(
-            node, 'geometry', <String, dynamic>{'fromAnchorId': fromAnchorId}));
+        _getHandlerParams(node, 'geometry', <String, dynamic>{
+          'fromAnchorId': fromAnchorId
+        })) as FutureOr<List<dynamic>>);
+    if (result != null) {
+      final vertices = result[0];
+      final typedVertices = vertices.map((e) => List<double>.from(e));
+      final verticesVectors =
+          typedVertices.map((e) => _vector3Converter.fromJson(e)).toList();
+
+      final indices = result[1];
+
+      return [verticesVectors, indices];
+    }
+    return [];
   }
 
   Future<Vector3?> projectPoint(Vector3 point) async {
@@ -739,5 +755,18 @@ class ARKitController {
   Future<ImageProvider> snapshot() async {
     final result = await _channel.invokeMethod<Uint8List>('snapshot');
     return MemoryImage(result!);
+  }
+
+  Future<List<double>> getViewportSize() async {
+    final result = await (_channel.invokeListMethod('getViewportSize')
+        as FutureOr<List<dynamic>>);
+    final size = result.map((i) => i as double).toList();
+    return size;
+  }
+
+  Future<double> getCameraFOV() async {
+    final result = await (_channel.invokeMethod<double>('getCameraFOV')
+        as FutureOr<double>);
+    return result;
   }
 }

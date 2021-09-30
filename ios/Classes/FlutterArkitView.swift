@@ -85,8 +85,7 @@ class FlutterArkitView: NSObject, FlutterPlatformView {
             onPerformHitTest(arguments!, result)
             break
         case "updateFaceGeometry":
-            onUpdateFaceGeometry(arguments!)
-            result(nil)
+            onUpdateFaceGeometry(arguments!, result)
             break
         case "getLightEstimate":
             onGetLightEstimate(result)
@@ -119,6 +118,18 @@ class FlutterArkitView: NSObject, FlutterPlatformView {
         case "snapshot":
             onGetSnapshot(result)
             break
+        case "getViewportSize":
+            onGetViewportSize(result)
+            break
+        case "getCameraFOV":
+            // FOV calculated based on the section "Projection Matrix with Viewport" available at
+            // https://stackoverflow.com/questions/47536580/get-camera-field-of-view-in-ios-11-arkit
+            let imageResolution = self.sceneView.session.currentFrame!.camera.imageResolution
+            let viewSize = self.sceneView.bounds.size
+            let projection = self.sceneView.session.currentFrame!.camera.projectionMatrix(for: .portrait, viewportSize: viewSize, zNear: 1, zFar: 1000)
+            let yScale = projection[1,1] // = 1/tan(fovy/2)
+            result(2 * atan(1/yScale) * 180/Float.pi)
+            break;
         default:
             result(FlutterMethodNotImplemented)
             break
