@@ -1,3 +1,5 @@
+import 'package:arkit_plugin_example/body_tracking_page.dart';
+import 'package:arkit_plugin_example/camera_position_scene.dart';
 import 'package:arkit_plugin_example/check_support_page.dart';
 import 'package:arkit_plugin_example/custom_animation_page.dart';
 import 'package:arkit_plugin_example/custom_object_page.dart';
@@ -149,6 +151,13 @@ class MyApp extends StatelessWidget {
             .push<void>(MaterialPageRoute(builder: (c) => FaceDetectionPage())),
       ),
       Sample(
+        'Body Tracking',
+        'Dash that follows your hand.',
+        Icons.person,
+        () => Navigator.of(context)
+            .push<void>(MaterialPageRoute(builder: (c) => BodyTrackingPage())),
+      ),
+      Sample(
         'Panorama',
         '360 photo sample.',
         Icons.panorama,
@@ -190,11 +199,17 @@ class MyApp extends StatelessWidget {
         () => Navigator.of(context)
             .push<void>(MaterialPageRoute(builder: (c) => SnapshotScenePage())),
       ),
+      Sample(
+        'Camera position',
+        'Get position of the camera in AR scene',
+        Icons.location_on,
+            () => Navigator.of(context)
+            .push<void>(MaterialPageRoute(builder: (c) => CameraPositionScenePage())),
+      ),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
         title: const Text('ARKit Demo'),
       ),
       body:
@@ -219,11 +234,11 @@ class SampleItem extends StatelessWidget {
           leading: Icon(item.icon),
           title: Text(
             item.title,
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           subtitle: Text(
             item.description,
-            style: Theme.of(context).textTheme.subtitle2,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
       ),
